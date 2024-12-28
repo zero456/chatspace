@@ -1,10 +1,10 @@
-import OpenAI from "https://deno.land/x/openai@v4.28.0/mod.ts";
+import OpenAI from "openai";
 import { batchLoadMessages, ChatHead } from "./workspace.ts";
 import {
   ChatCompletionChunk,
   ChatCompletionMessageParam,
-} from "https://deno.land/x/openai@v4.28.0/resources/mod.ts";
-import { Stream } from "https://deno.land/x/openai@v4.28.0/streaming.ts";
+} from "openai/resources/mod.ts";
+import { Stream } from "openai/streaming.ts";
 
 interface Backend {
   oai: OpenAI;

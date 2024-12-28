@@ -1,5 +1,5 @@
 import { FreshContext, Handlers } from "$fresh/server.ts";
-import { ulid } from "https://deno.land/x/ulid@v0.3.0/mod.ts";
+import { ulid } from "ulid";
 import { kv } from "../../../../../lib/kv.ts";
 import {
   batchLoadMessages,
