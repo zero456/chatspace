@@ -1,4 +1,4 @@
-import { useContext } from "preact/hooks";
+import { useContext, useEffect } from "preact/hooks";
 import { fetchOrError } from "../lib/fetch.ts";
 import {
   ChatHead,
@@ -11,6 +11,37 @@ import {
 export function SidebarContent() {
   const state = useContext(WorkspaceStateContext)!;
   const currentHead = state.currentHead.value;
+
+  // 添加 SSE 监听
+  useEffect(() => {
+    const headListeners = new Map<string, EventSource>();
+
+    // 为每个对话头创建 SSE 监听
+    for (const head of state.heads.value.values()) {
+      const sse = new EventSource(
+        `/api/workspace/${state.id}/chats/${head.id}`,
+      );
+
+      sse.onmessage = (event) => {
+        const body: { head: ChatHead } = JSON.parse(event.data);
+        if (body.head) {
+          // 更新对话头
+          state.heads.value = new Map(state.heads.value);
+          state.heads.value.set(body.head.id, body.head);
+        }
+      };
+
+      headListeners.set(head.id, sse);
+    }
+
+    // 清理函数
+    return () => {
+      for (const sse of headListeners.values()) {
+        sse.close();
+      }
+    };
+  }, [state.heads.value.size]); // 当对话数量变化时重新设置监听
+
   return (
     <div class="flex flex-col h-full">
       <div class="p-2 hidden sm:block">

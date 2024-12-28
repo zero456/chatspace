@@ -14,8 +14,8 @@ export const handler: Handlers = {
 
     const head: ChatHead = {
       id: ulid(),
-      title: "New Chat",
-      systemPrompt: "You are a helpful assistant.",
+      title: "对话名称（可单击修改）",
+      systemPrompt: "你是一位博学的专家，用中文给出简洁而有用的答案。",
       timestamp: Date.now(),
     };
     await kv.set(["heads", ctx.params.workspaceId, head.id], head);

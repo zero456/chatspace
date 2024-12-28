@@ -16,6 +16,7 @@ OpenAI-compatible service. Then run from the root of this repository:
 ```
 export CHATSPACE_DEFAULT_BACKEND=myapi
 export CHATSPACE_BACKEND_MYAPI=https://api.openai.com/v1,sk-xxxxxxxx,gpt-3.5-turbo-1106
+export CHATSPACE_PASSWORD=your_password_here
 
 deno task start
 ```
