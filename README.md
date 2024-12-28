@@ -20,3 +20,12 @@ export CHATSPACE_PASSWORD=your_password_here
 
 deno task start
 ```
+
+## Deployment
+
+To deploy to Deno Deploy:
+
+1. Create a project on [Deno Deploy](https://dash.deno.com)
+2. Link your GitHub repository
+3. Update the project name in `.github/workflows/deploy.yml`
+4. Push to main branch to trigger deployment
