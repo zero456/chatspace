@@ -189,7 +189,35 @@ export const handler: Handlers = {
       ctx.params.chatId,
     ];
 
-    await kv.delete(headKey);
+    // 先获取对话头信息
+    const head = await kv.get<ChatHead>(headKey);
+    if (!head.value) return ctx.renderNotFound();
+
+    // 创建原子操作
+    const atomic = kv.atomic();
+
+    // 删除对话头
+    atomic.delete(headKey);
+
+    // 删除所有相关消息
+    if (head.value.messages) {
+      for (const messageId of head.value.messages) {
+        if (messageId) { // 跳过空字符串（用作分隔符）
+          atomic.delete([
+            "messages",
+            ctx.params.workspaceId,
+            messageId,
+          ]);
+        }
+      }
+    }
+
+    // 执行原子操作
+    const { ok } = await atomic.commit();
+    if (!ok) {
+      return Response.json({ error: "conflict" }, { status: 409 });
+    }
+
     return Response.json({ ok: true });
   },
 

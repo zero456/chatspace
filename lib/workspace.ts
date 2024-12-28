@@ -8,6 +8,7 @@ export interface WorkspaceState {
 }
 
 export interface WorkspaceInfo {
+  name?: string;
   heads: ChatHead[];
   createdAt: number;
 }
