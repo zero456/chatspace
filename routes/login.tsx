@@ -8,14 +8,17 @@ interface LoginData {
 
 export const handler: Handlers<LoginData> = {
   GET(req, ctx) {
+    const url = new URL(req.url);
     const cookies = getCookies(req.headers);
     const savedPassword = cookies.password;
-    return ctx.render({ savedPassword });
+    const returnUrl = url.searchParams.get("return") || "/";
+    return ctx.render({ savedPassword, returnUrl });
   },
 
   async POST(req, ctx) {
     const form = await req.formData();
     const password = form.get("password")?.toString();
+    const returnUrl = form.get("return")?.toString() || "/";
     const correctPassword = Deno.env.get("CHATSPACE_PASSWORD");
 
     if (!correctPassword) {
@@ -27,14 +30,16 @@ export const handler: Handlers<LoginData> = {
     }
 
     const headers = new Headers();
-    headers.set("location", "/");
+    headers.set("location", decodeURIComponent(returnUrl));
 
-    // 设置cookie，有效期1天
     setCookie(headers, {
       name: "password",
       value: password,
       maxAge: 86400,
       path: "/",
+      httpOnly: true,
+      secure: true,
+      sameSite: "Lax",
     });
 
     return new Response(null, {
@@ -44,12 +49,13 @@ export const handler: Handlers<LoginData> = {
   },
 };
 
-export default function Login({ data }: PageProps<LoginData>) {
+export default function Login({ data }: PageProps<LoginData & { returnUrl: string }>) {
   return (
     <div class="min-h-screen bg-gray-100 flex items-center justify-center">
       <div class="bg-white p-8 rounded-lg shadow-md w-96">
         <h1 class="text-2xl font-bold mb-6 text-center">登录 Chatspace</h1>
         <form method="POST">
+          <input type="hidden" name="return" value={data.returnUrl} />
           {data.error && (
             <div class="mb-4 text-red-500 text-center">
               {data.error}
