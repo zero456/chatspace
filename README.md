@@ -10,7 +10,7 @@ used to deliver updates to everyone in this workspace.
 
 ## Running locally
 
-To run the app locally, you will need to install Deno and have the API key to an
+To run the app locally, you will need to install Deno 2.0+ and have the API key to an
 OpenAI-compatible service. Then run from the root of this repository:
 
 ```

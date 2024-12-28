@@ -1,18 +1,15 @@
 name: Deploy
 on:
   push:
-    branches: main
-  pull_request:
-    branches: main
+    branches: [main]
 
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-
     permissions:
-      id-token: write # Needed for auth with Deno Deploy
-      contents: read # Needed to clone the repository
+      id-token: write
+      contents: read
 
     steps:
       - name: Clone repository
@@ -21,7 +18,7 @@ jobs:
       - name: Install Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: v2.x
+          deno-version: "2.x"
 
       - name: Build step
         run: "deno task build"
@@ -29,8 +26,9 @@ jobs:
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
         with:
-          project: "fchat"
-          entrypoint: "main.ts"
-          root: "."
+          project: "chatspace"
+          entrypoint: "./main.ts"
+          import-map: "./deno.json"
+          exclude: []
           
           
