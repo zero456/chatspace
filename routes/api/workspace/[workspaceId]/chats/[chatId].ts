@@ -157,7 +157,9 @@ export const handler: Handlers = {
         const content = chunk.choices[0]?.delta.content ?? "";
         assistantMessage.text += content;
         assistantMessage.timestamp = Date.now();
-        assistantMessage.completed = !!chunk.choices[0]?.finish_reason;
+        const finishReason = chunk.choices[0]?.finish_reason;
+        assistantMessage.completed = finishReason === "stop";
+
         if (!ongoingSet) {
           ongoingSet = Promise.all([
             kv.set(assistantMessageKey, assistantMessage),
@@ -173,8 +175,8 @@ export const handler: Handlers = {
       if (!assistantMessage.completed) {
         assistantMessage.interrupted = true;
         assistantMessage.completed = true;
+        await kv.set(assistantMessageKey, assistantMessage);
       }
-      await kv.set(assistantMessageKey, assistantMessage);
     })().catch((e) => {
       console.log(`generation failed (chat ${ctx.params.chatId}): ${e}`);
     });

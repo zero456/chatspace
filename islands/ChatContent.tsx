@@ -347,8 +347,8 @@ function MessageView(
           </button>
         </div>
       </div>
-      {(message.interrupted ||
-          (!message.completed && Date.now() - message.timestamp > 30000))
+      {(message.interrupted && !message.completed) ||
+          (!message.completed && Date.now() - message.timestamp > 30000)
         ? <div class="text-red-500">Interrupted</div>
         : null}
       <div
