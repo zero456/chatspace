@@ -29,6 +29,6 @@ jobs:
           project: "chatspace"
           entrypoint: "./main.ts"
           import-map: "./deno.json"
-          exclude: []
+          exclude: ""
           
           
