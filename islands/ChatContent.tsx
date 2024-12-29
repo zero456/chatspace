@@ -103,23 +103,6 @@ function ChatContentForId({ chatId }: { chatId: string }) {
     }
   };
 
-  const processedMessages = useMemo(() => {
-    if (!head?.messages) return [];
-    
-    return head.messages.map(id => {
-      if (!id) {
-        return { type: 'boundary' };
-      }
-      const message = messageCache.current.get(id);
-      if (!message) return null;
-      
-      return {
-        ...message,
-        formattedTime: new Date(message.timestamp).toLocaleString()
-      };
-    }).filter(Boolean);
-  }, [head?.messages, messageCache.current]);
-
   if (!head) return <div></div>;
   return (
     <div class="h-full">
@@ -236,20 +219,26 @@ function ChatContentForId({ chatId }: { chatId: string }) {
         </div>
 
         <div class="flex flex-col space-y-2 overflow-y-auto">
-          {processedMessages.map(message => (
-            message.type === 'boundary' ? (
-              <div class="text-gray-400 border-gray-400 text-sm border-b">
-                New conversation
-              </div>
-            ) : (
+          {head.messages?.map((id, i) => {
+            if (!id) {
+              // boundary
+              return (
+                <div class="text-gray-400 border-gray-400 text-sm border-b">
+                  New conversation
+                </div>
+              );
+            }
+            const message = messageCache.current.get(id);
+            if (!message) return null;
+            return (
               <MessageView
-                key={message.id}
+                key={id}
                 chatId={head.id}
                 message={message}
-                forceCompleted={message.id !== head.messages[head.messages.length - 1]}
+                forceCompleted={i !== head.messages!.length - 1}
               />
-            )
-          ))}
+            );
+          })}
           <div ref={bottomRef}></div>
         </div>
       </div>

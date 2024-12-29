@@ -34,8 +34,7 @@
     "ammonia": "https://deno.land/x/ammonia@0.3.1/mod.ts",
     "openai": "https://deno.land/x/openai@v4.69.0/mod.ts",
     "openai/": "https://deno.land/x/openai@v4.69.0/",
-    "ulid": "https://deno.land/x/ulid@v0.3.0/mod.ts",
-    "marked": "npm:marked@15.0.4"
+    "ulid": "https://deno.land/x/ulid@v0.3.0/mod.ts"
   },
   "compilerOptions": {
     "jsx": "react-jsx",
