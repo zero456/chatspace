@@ -49,11 +49,11 @@ export function ChatUI(
 
   return (
     <WorkspaceStateContext.Provider value={state}>
-      <div class="flex flex-col h-screen bg-gray-100">
-        <div class="h-14 bg-gray-900 text-white px-4 flex items-center shadow-md">
+      <div class="flex flex-col h-screen">
+        <div class="bg-gray-800 text-white p-4 flex items-center">
           <div class="flex items-center sm:hidden">
             <button
-              class="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+              class="text-xl mr-4"
               onClick={toggleSidebar}
             >
               ☰
@@ -64,8 +64,7 @@ export function ChatUI(
             {editingName !== null ? (
               <input
                 type="text"
-                class="w-full p-2 bg-gray-800 text-white rounded-lg border border-gray-700
-                       focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full p-2 text-black rounded"
                 value={editingName}
                 onChange={(e) => setEditingName((e.target as HTMLInputElement).value)}
                 onBlur={async () => {
@@ -88,7 +87,10 @@ export function ChatUI(
                 autoFocus
               />
             ) : (
-              <h1 class="text-xl font-semibold hover:text-gray-300 cursor-pointer">
+              <h1
+                class="text-xl font-bold cursor-pointer hover:text-gray-300"
+                onClick={() => setEditingName(workspaceInfo.name || `工作区 ${workspaceId}`)}
+              >
                 {workspaceInfo.name || `工作区 ${workspaceId}`}
               </h1>
             )}
@@ -96,8 +98,7 @@ export function ChatUI(
 
           <a
             href="/workspace"
-            class="ml-4 p-2 text-gray-300 hover:text-white hover:bg-gray-800 
-                   rounded-lg transition-colors"
+            class="ml-4 text-gray-300 hover:text-white"
             title="返回工作区列表"
           >
             <svg
@@ -106,7 +107,7 @@ export function ChatUI(
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="w-5 h-5"
+              class="w-6 h-6"
             >
               <path
                 stroke-linecap="round"
@@ -117,13 +118,15 @@ export function ChatUI(
           </a>
         </div>
 
-        <div class="flex flex-1 overflow-hidden h-[calc(100vh-3.5rem)]">
-          <div class={`w-72 bg-gray-800 flex flex-col ${
-            isSidebarOpen ? "block" : "hidden"
-          } sm:block`}>
+        <div class="flex flex-1 overflow-hidden">
+          <div
+            class={`w-64 bg-gray-200 ${
+              isSidebarOpen ? "block" : "hidden"
+            } sm:block`}
+          >
             <SidebarContent />
           </div>
-          <div class="flex-1 bg-gray-100 flex flex-col">
+          <div class="flex-1 bg-gray-100">
             <ChatContent />
           </div>
         </div>
