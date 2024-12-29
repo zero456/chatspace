@@ -69,55 +69,57 @@ export const handler: Handlers = {
   },
 
   async DELETE(req: Request, ctx: FreshContext) {
-    const workspaceId = ctx.params.workspaceId;
-    
-    // 获取工作区信息
-    const info = await kv.get<WorkspaceInfo>([
-      "workspaces",
-      workspaceId,
-    ]);
-    if (!info.value) return ctx.renderNotFound();
-
-    // 获取所有对话头
-    const heads = await Array.fromAsync(
-      kv.list<ChatHead>({ prefix: ["heads", workspaceId] }),
-    );
-
-    // 创建原子操作
-    const atomic = kv.atomic();
-
-    // 删除工作区信息
-    atomic.delete(["workspaces", workspaceId]);
-
-    // 删除所有对话头和消息
-    for (const head of heads) {
-      atomic.delete(head.key);
+    try {
+      // 获取工作区信息
+      const info = await kv.get<WorkspaceInfo>([
+        "workspaces",
+        ctx.params.workspaceId,
+      ]);
       
-      // 删除对话中的所有消息
-      if (head.value.messages) {
-        for (const messageId of head.value.messages) {
-          if (messageId) { // 跳过空字符串（用作分隔符）
-            atomic.delete([
-              "messages",
-              workspaceId,
-              messageId,
-            ]);
+      if (!info.value) {
+        return ctx.renderNotFound();
+      }
+
+      // 获取所有对话头
+      const heads = await Array.fromAsync(
+        kv.list<ChatHead>({ prefix: ["heads", ctx.params.workspaceId] })
+      );
+
+      // 创建原子操作
+      const atomic = kv.atomic();
+
+      // 删除工作区信息
+      atomic.delete(["workspaces", ctx.params.workspaceId]);
+
+      // 删除所有对话头和消息
+      for (const head of heads) {
+        atomic.delete(head.key);
+        
+        if (head.value.messages) {
+          for (const messageId of head.value.messages) {
+            if (messageId) {
+              atomic.delete([
+                "messages",
+                ctx.params.workspaceId,
+                messageId,
+              ]);
+            }
           }
         }
       }
-    }
 
-    // 执行原子操作
-    const { ok } = await atomic.commit();
-    if (!ok) {
-      return Response.json({ error: "conflict" }, { status: 409 });
-    }
+      const { ok } = await atomic.commit();
+      if (!ok) {
+        return new Response("删除失败：数据冲突", { status: 409 });
+      }
 
-    // 删除成功后重定向到工作区列表页
-    return new Response(null, {
-      status: 303,
-      headers: { Location: "/workspace" },
-    });
+      return new Response(null, {
+        status: 303,
+        headers: { Location: "/workspace" },
+      });
+    } catch (error) {
+      return new Response("删除失败：" + error.message, { status: 500 });
+    }
   },
 };
 

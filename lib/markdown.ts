@@ -1,5 +1,5 @@
 import * as ammonia from "ammonia";
-import { marked } from "npm:marked@11.1.0";
+import { marked } from "marked";
 
 const ammoniaInit = ammonia.init();
 
